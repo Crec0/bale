@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "mcserverapi",
+  "version": "${version}",
+
+  "name": "McServerApi",
+  "description": "Minecraft server api",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "sources": "https://github.com/Crec0/McServerApi"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/mcserverapi/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "dev.crec.mcserverapi.McServerApi"
+      }
+    ]
+  },
+  "mixins": [
+    "mcserverapi.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17",
+    "fabric-language-kotlin": ">=1.7.4+kotlin.1.6.21"
+  }
+}
