@@ -40,9 +40,13 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
-    shadow("io.ktor:ktor-server-core-jvm:$ktor_version")
-    shadow("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    shadow("io.ktor:ktor-server-core:$ktor_version")
+    shadow("io.ktor:ktor-server-netty:$ktor_version")
     shadow("io.ktor:ktor-server-websockets:$ktor_version")
+    shadow("io.ktor:ktor-server-auth:$ktor_version")
+    shadow("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    shadow("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    shadow("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 }
 
 tasks {
