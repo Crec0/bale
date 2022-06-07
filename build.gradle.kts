@@ -14,7 +14,7 @@ val ktor_version: String by project
 plugins {
     kotlin("jvm")
     id("fabric-loom")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+//    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.juuxel.loom-quiltflower") version "1.7.2"
     java
 }
@@ -32,6 +32,11 @@ repositories {
     mavenCentral()
 }
 
+val transitiveInclude: Configuration by configurations.creating {
+    exclude(group = "org.jetbrains.kotlin")
+    exclude(group = "com.mojang")
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft_version")
     mappings(loom.officialMojangMappings())
@@ -40,25 +45,29 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
-    shadow("io.ktor:ktor-server-core:$ktor_version")
-    shadow("io.ktor:ktor-server-netty:$ktor_version")
-    shadow("io.ktor:ktor-server-websockets:$ktor_version")
-    shadow("io.ktor:ktor-server-auth:$ktor_version")
-    shadow("io.ktor:ktor-server-auth-jwt:$ktor_version")
-    shadow("io.ktor:ktor-server-content-negotiation:$ktor_version")
-    shadow("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    transitiveInclude(implementation("io.ktor:ktor-server-core:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-netty:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-websockets:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-auth:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")!!)
+
+    transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
+        include(it.moduleVersion.id.toString())
+    }
 }
 
 tasks {
 
-    shadowJar {
-        configurations[0] = project.configurations.shadow.get()
-    }
-
-    remapJar {
-        dependsOn(shadowJar)
-        inputFile.set(shadowJar.get().archiveFile)
-    }
+//    shadowJar {
+//        configurations[0] = project.configurations.shadow.get()
+//    }
+//
+//    remapJar {
+//        dependsOn(shadowJar)
+//        inputFile.set(shadowJar.get().archiveFile)
+//    }
 
     processResources {
         inputs.property("version", version)
@@ -72,17 +81,17 @@ tasks {
     }
 
     compileKotlin {
-        doFirst {
-            delete("build")
-        }
+//        doFirst {
+//            delete("build")
+//        }
         kotlinOptions.jvmTarget = "17"
     }
 
-    build {
-        doLast {
-            delete(shadowJar.get().archiveFile)
-        }
-    }
+//    build {
+//        doLast {
+//            delete(shadowJar.get().archiveFile)
+//        }
+//    }
 }
 
 java {
