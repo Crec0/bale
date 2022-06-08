@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import dev.crec.mcserverapi.LOG
 import dev.crec.mcserverapi.server.CONFIG_PATH
+import kotlinx.serialization.Serializable
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.readText
@@ -15,9 +16,10 @@ val GSON: Gson = GsonBuilder()
     .disableHtmlEscaping()
     .create()
 
+@Serializable
 data class Client(
-    val clientName: String,
-    val clientDigest: String
+    val name: String,
+    val digest: String
 )
 
 sealed interface ClientWhitelist {
@@ -37,25 +39,25 @@ data class ClientWhitelistImpl(
     override val entryMap: MutableMap<String, Client> = mutableMapOf()
 ) : ClientWhitelist {
     override fun add(client: Client) {
-        entryMap[client.clientName] = client
+        entryMap[client.name] = client
     }
 
     override fun remove(client: Client) {
-        entryMap.remove(client.clientName)
+        entryMap.remove(client.name)
     }
 
     override fun contains(client: Client): Boolean {
-        return entryMap.containsKey(client.clientName)
+        return entryMap.containsKey(client.name)
     }
 
     override fun get(client: Client): Client? {
-        return entryMap[client.clientName]
+        return entryMap[client.name]
     }
 
     override fun toJson(): String {
         val json = JsonObject()
         entryMap.forEach { (name, client) ->
-            json.addProperty(name, client.clientDigest)
+            json.addProperty(name, client.digest)
         }
         return json.toString()
     }

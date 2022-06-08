@@ -3,6 +3,7 @@ package dev.crec.mcserverapi.connection
 import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm.RSA256
+import dev.crec.mcserverapi.LOG
 import dev.crec.mcserverapi.apiServer
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
@@ -53,12 +54,16 @@ fun Application.configureAuth() {
     }
     routing {
         post("/login") {
+            LOG.info("Login request")
             val client = call.receive<Client>()
+            LOG.info(">> $client")
+
             val keyPair = apiServer.keyPair
             val token = JWT.create()
                 .withIssuer(issuer)
-                .withClaim("username", client.clientName)
+                .withClaim("username", client.name)
                 .sign(RSA256(keyPair.public as RSAPublicKey, keyPair.private as RSAPrivateKey))
+
             call.respond(hashMapOf("token" to token))
         }
     }
