@@ -1,5 +1,8 @@
 @file:Suppress("PropertyName", "VulnerableLibrariesLocal")
 
+import com.google.common.io.Files
+
+val archives_base_name: String by project
 val version: String by project
 val group: String by project
 
@@ -15,7 +18,6 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization").version("1.6.21")
     id("fabric-loom")
-//    id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.github.juuxel.loom-quiltflower") version "1.7.2"
     java
 }
@@ -46,13 +48,13 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
-    transitiveInclude(implementation("io.ktor:ktor-server-core:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-server-netty:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-server-websockets:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-server-auth:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")!!)
-    transitiveInclude(implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-core-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-websockets-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")!!)
+    transitiveInclude(implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")!!)
 
     transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
         include(it.moduleVersion.id.toString())
@@ -60,16 +62,6 @@ dependencies {
 }
 
 tasks {
-
-//    shadowJar {
-//        configurations[0] = project.configurations.shadow.get()
-//    }
-//
-//    remapJar {
-//        dependsOn(shadowJar)
-//        inputFile.set(shadowJar.get().archiveFile)
-//    }
-
     processResources {
         inputs.property("version", version)
         filesMatching("fabric.mod.json") {
@@ -82,17 +74,18 @@ tasks {
     }
 
     compileKotlin {
-//        doFirst {
-//            delete("build")
-//        }
         kotlinOptions.jvmTarget = "17"
     }
 
-//    build {
-//        doLast {
-//            delete(shadowJar.get().archiveFile)
-//        }
-//    }
+    build {
+        doLast {
+            File("D:/minecraft_utils/server/mods/$archives_base_name-$version.jar").delete()
+            Files.copy(
+                File("./build/libs/$archives_base_name-$version.jar"),
+                File("D:/minecraft_utils/server/mods/$archives_base_name-$version.jar")
+            )
+        }
+    }
 }
 
 java {
