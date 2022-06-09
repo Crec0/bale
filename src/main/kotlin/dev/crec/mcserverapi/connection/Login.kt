@@ -1,11 +1,11 @@
 package dev.crec.mcserverapi.connection
 
 import com.auth0.jwk.JwkProviderBuilder
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm.RSA256
-import dev.crec.mcserverapi.LOG
-import dev.crec.mcserverapi.apiServer
+import dev.crec.mcserverapi.ISSUER
+import dev.crec.mcserverapi.SERVER
+import dev.crec.mcserverapi.config.Client
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.IllegalHeaderNameException
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -18,8 +18,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
+import kotlinx.serialization.SerializationException
 import java.util.concurrent.TimeUnit
 
 fun Application.configureAuth() {
@@ -27,17 +26,13 @@ fun Application.configureAuth() {
         json()
     }
 
-    val issuer = "MCServerAPI"
-
-    val jwkProvider = JwkProviderBuilder(issuer)
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+    val jwkProvider =
+        JwkProviderBuilder(ISSUER).cached(10, 24, TimeUnit.HOURS).rateLimited(10, 1, TimeUnit.MINUTES).build()
 
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "dev.crec.mcserverapi"
-            verifier(jwkProvider, issuer) {
+            verifier(jwkProvider, ISSUER) {
                 acceptLeeway(3)
             }
             validate { credential ->
@@ -54,17 +49,21 @@ fun Application.configureAuth() {
     }
     routing {
         post("/login") {
-            LOG.info("Login request")
-            val client = call.receive<Client>()
-            LOG.info(">> $client")
-
-            val keyPair = apiServer.keyPair
-            val token = JWT.create()
-                .withIssuer(issuer)
-                .withClaim("username", client.name)
-                .sign(RSA256(keyPair.public as RSAPublicKey, keyPair.private as RSAPrivateKey))
-
-            call.respond(hashMapOf("token" to token))
+            try {
+                val client = call.receive<Client>()
+                val token = SERVER.generateToken(client)
+                call.respond(mapOf("token" to token))
+            } catch (e: SerializationException) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid request. Please check your request body.")
+            } catch (e: Exception) {
+                call.respond(
+                    if (e is IllegalHeaderNameException)
+                        HttpStatusCode.Unauthorized
+                    else
+                        HttpStatusCode.InternalServerError,
+                    e.localizedMessage
+                )
+            }
         }
     }
 }
