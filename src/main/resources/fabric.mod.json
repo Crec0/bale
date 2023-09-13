@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "mcserverapi",
+  "id": "bale",
   "version": "${version}",
 
-  "name": "McServerApi",
-  "description": "Minecraft server api",
+  "name": "Bale",
+  "description": "Minecraft server api, blessed by Hawksbill",
   "authors": [
-    "Me!"
+    "Crec0"
   ],
   "contact": {
     "sources": "https://github.com/Crec0/McServerApi"
@@ -20,19 +20,19 @@
     "main": [
       {
         "adapter": "kotlin",
-        "value": "dev.crec.mcserverapi.McServerApi"
+        "value": "dev.crec.bale.BaleKt::init"
       }
     ]
   },
   "mixins": [
-    "mcserverapi.mixins.json"
+    "bale.mixins.json"
   ],
 
   "depends": {
-    "fabricloader": ">=0.13.3",
+    "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "1.18.x",
-    "java": ">=17",
-    "fabric-language-kotlin": ">=1.7.4+kotlin.1.6.21"
+    "minecraft": "*",
+    "java": ">=20",
+    "fabric-language-kotlin": "*"
   }
 }

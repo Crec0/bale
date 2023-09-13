@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.crec.mcserverapi.mixin",
+  "package": "dev.crec.bale.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
