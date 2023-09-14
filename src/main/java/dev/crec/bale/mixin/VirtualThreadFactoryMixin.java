@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.util.concurrent.ThreadFactory;
 
-@Mixin(ServerConnectionListener.class)
+@Mixin(value = ServerConnectionListener.class, remap = false)
 public class VirtualThreadFactoryMixin {
     @ModifyArg(
             method = "method_14348",
