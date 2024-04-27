@@ -1,5 +1,10 @@
 package dev.crec.bale.crypto
 
+import dev.crec.bale.LOG
+import dev.crec.bale.configFile
+import dev.crec.bale.crypto.Crypto.base64
+import dev.crec.bale.crypto.Crypto.writeToFile
+import net.fabricmc.loader.impl.util.log.Log
 import java.nio.ByteBuffer
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -9,6 +14,8 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
 
 
 private const val ALGORITHM = "AES/GCM/NoPadding"
@@ -63,13 +70,16 @@ object Crypto {
     }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun keyFromBase64(b64: String): SecretKey {
-        return SecretKeySpec(Base64.decode(b64), "AES")
+    fun SecretKey.base64() = Base64.encode(this.encoded)
+
+    fun SecretKey.writeToFile() = runCatching {
+        configFile.writeText(this.base64())
     }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun SecretKey.base64() = Base64.encode(this.encoded)
+    fun readFromFile() = runCatching {
+        val key = configFile.readText()
 
-    @OptIn(ExperimentalEncodingApi::class)
-    fun ByteArray.base64() = Base64.encode(this)
+        SecretKeySpec(Base64.decode(key), "AES")
+    }
 }

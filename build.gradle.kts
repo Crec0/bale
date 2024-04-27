@@ -9,14 +9,14 @@ val fabric_loader_version: String by project
 val fabric_api_version: String by project
 
 plugins {
-    val kotlinVersion = "1.9.10"
+    val kotlinVersion = "1.9.23"
 
     kotlin("jvm") version (kotlinVersion)
     kotlin("plugin.serialization") version (kotlinVersion)
+    id("io.ktor.plugin") version "2.3.10"
 
-    id("fabric-loom") version "1.3-SNAPSHOT"
+    id("fabric-loom") version "1.6-SNAPSHOT"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.github.juuxel.loom-quiltflower") version "1.8.0"
     java
 }
 
@@ -25,11 +25,6 @@ repositories {
         name = "Ktor"
         url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
     }
-
-    maven {
-        name = "Cotton-Quiltflower"
-        url = uri("https://server.bbkr.space/artifactory/libs-release/")
-    }
     mavenCentral()
 }
 
@@ -37,14 +32,25 @@ dependencies {
     minecraft("com.mojang:minecraft:$minecraft_version")
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:$fabric_loader_version")
-
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
+
+    implementation("io.ktor:ktor-server-core-jvm")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
+    implementation("io.ktor:ktor-server-websockets-jvm")
+    implementation("io.ktor:ktor-server-netty-jvm")
+    implementation("io.ktor:ktor-server-auth")
+    implementation("io.ktor:ktor-server-html-builder")
 }
 
 tasks {
     shadowJar {
         configurations[0] = project.configurations.shadow.get()
+        dependencies {
+            exclude(dependency("net.fabricmc:*"))
+            exclude(dependency("com.mojang:*"))
+        }
     }
 
     remapJar {
@@ -68,8 +74,8 @@ tasks {
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "20"
-        kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        kotlinOptions.jvmTarget = "21"
+        kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
 }
 
