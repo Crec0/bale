@@ -13,10 +13,8 @@ plugins {
 
     kotlin("jvm") version (kotlinVersion)
     kotlin("plugin.serialization") version (kotlinVersion)
-    id("io.ktor.plugin") version "2.3.10"
 
     id("fabric-loom") version "1.6-SNAPSHOT"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
     java
 }
 
@@ -28,36 +26,37 @@ repositories {
     mavenCentral()
 }
 
+val transitiveInclude: Configuration by configurations.creating {
+    exclude(group = "com.mojang")
+    exclude(group = "net.fabricmc")
+    exclude(group = "org.jetbrains.kotlin")
+    exclude(group = "org.jetbrains.kotlinx")
+}
+
+val ktorVersion = "2.3.10"
+
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft_version")
     mappings(loom.officialMojangMappings())
+
     modImplementation("net.fabricmc:fabric-loader:$fabric_loader_version")
     modImplementation("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fabric_api_version")
 
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.ktor:ktor-server-websockets-jvm")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("io.ktor:ktor-server-auth")
-    implementation("io.ktor:ktor-server-html-builder")
+    transitiveInclude(implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-websockets-jvm:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-auth:$ktorVersion")!!)
+    transitiveInclude(implementation("io.ktor:ktor-server-html-builder:$ktorVersion")!!)
+
+    transitiveInclude.resolvedConfiguration.resolvedArtifacts.forEach {
+        include(it.moduleVersion.id.toString())
+    }
 }
 
 tasks {
-    shadowJar {
-        configurations[0] = project.configurations.shadow.get()
-        dependencies {
-            exclude(dependency("net.fabricmc:*"))
-            exclude(dependency("com.mojang:*"))
-        }
-    }
-
-    remapJar {
-        dependsOn(shadowJar)
-        inputFile.set(shadowJar.get().archiveFile)
-    }
-
     processResources {
         inputs.property("version", version)
         filesMatching("fabric.mod.json") {

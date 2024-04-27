@@ -20,7 +20,8 @@ import kotlin.io.path.notExists
 
 const val SERVER_NAME = "bale"
 
-val configFile: Path = FabricLoader.getInstance().configDir.resolve("bale").resolve("key.txt")
+val configFile: Path = Path.of("config", "bale", "key.txt")
+//val configFile: Path = FabricLoader.getInstance().configDir.resolve("bale").resolve("key.txt")
 val LOG: Logger = LoggerFactory.getLogger(SERVER_NAME)
 
 lateinit var server: NettyApplicationEngine
@@ -36,6 +37,9 @@ val thread = thread(start = false, name = "bale-network-thread") {
     server.start(wait = true)
 }
 
+fun main() {
+    serve()
+}
 
 fun serve() {
     thread.start()

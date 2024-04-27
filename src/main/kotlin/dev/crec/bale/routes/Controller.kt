@@ -1,24 +1,39 @@
 package dev.crec.bale.routes
 
+import dev.crec.bale.scraps.path
 import io.ktor.server.application.*
-import io.ktor.server.html.*
-import io.ktor.server.response.*
+import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
-import kotlinx.html.*
+import kotlinx.html.h1
+import kotlinx.html.svg
 
 fun Application.setupRouting() {
     routing {
+        staticResources("/static", "static")
         get("/") {
-            call.respondText("Hello, World!")
-        }
-        get("/chacha") {
-            call.respondHtml {
-                head {
-                    title { +"Chacha" }
+            call.respondFullPage {
+                h1 {
+                    +"We wildin"
                 }
-                body {
-                    h1 { +"Chacha" }
-                    p { +"Chacha is a good" }
+                svg {
+                    attributes["fill"] = "none"
+                    attributes["viewBox"] = "0 0 24 24"
+                    attributes["stroke"] = "currentColor"
+                    attributes["class"] = "w-16 h-16"
+                    path {
+                        attributes["stroke-linecap"] = "round"
+                        attributes["stroke-linejoin"] = "round"
+                        attributes["stroke-width"] = "2"
+                        attributes["d"] = "M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    }
+                }
+            }
+        }
+        get("/stats/{stat}") {
+            val stat = call.parameters["stat"]
+            call.respondFullPage {
+                h1 {
+                    +"$stat"
                 }
             }
         }
