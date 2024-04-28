@@ -26,7 +26,7 @@ val LOG: Logger = LoggerFactory.getLogger(SERVER_NAME)
 
 lateinit var server: NettyApplicationEngine
 val thread = thread(start = false, name = "bale-network-thread") {
-    server = embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
+    server = embeddedServer(Netty, port = 8080, host = "0.0.0.0", watchPaths = listOf("classes")) {
         setupRouting()
         install(ContentNegotiation) {
             json(Json {

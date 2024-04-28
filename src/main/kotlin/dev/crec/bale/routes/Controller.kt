@@ -13,12 +13,11 @@ fun Application.setupRouting() {
         get("/") {
             call.respondFullPage {
                 h1 {
-                    +"We wildin"
+                    +"We pepepe]"
                 }
                 svg {
-                    attributes["fill"] = "none"
                     attributes["viewBox"] = "0 0 24 24"
-                    attributes["stroke"] = "currentColor"
+                    attributes["stroke"] = "red"
                     attributes["class"] = "w-16 h-16"
                     path {
                         attributes["stroke-linecap"] = "round"

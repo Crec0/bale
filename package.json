@@ -1,0 +1,15 @@
+{
+  "name": "bale",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "css": "bunx tailwindcss -i input.css -o src/main/resources/static/stylesheet.css --watch"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "tailwindcss": "^3.4.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
