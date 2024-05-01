@@ -466,6 +466,7 @@ video {
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
   --ring: 0 0% 83.1%;
+  --radius: 0.3rem;
 }
 
 * {
@@ -655,6 +656,10 @@ body {
   margin-left: 1rem;
 }
 
+.mt-4 {
+  margin-top: 1rem;
+}
+
 .block {
   display: block;
 }
@@ -671,16 +676,12 @@ body {
   height: 3.5rem;
 }
 
-.h-16 {
-  height: 4rem;
-}
-
 .min-h-screen {
   min-height: 100vh;
 }
 
-.w-16 {
-  width: 4rem;
+.w-32 {
+  width: 8rem;
 }
 
 .w-full {
@@ -703,28 +704,42 @@ body {
   align-items: center;
 }
 
-.space-x-4 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1rem * var(--tw-space-x-reverse));
-  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.5rem * var(--tw-space-x-reverse));
   margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
+.rounded-lg {
+  border-radius: var(--radius);
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
 .border-b {
   border-bottom-width: 1px;
+}
+
+.border-solid {
+  border-style: solid;
 }
 
 .border-border\/40 {
   border-color: hsl(var(--border) / 0.4);
 }
 
+.bg-background\/10 {
+  background-color: hsl(var(--background) / 0.1);
+}
+
 .bg-background\/95 {
   background-color: hsl(var(--background) / 0.95);
+}
+
+.p-4 {
+  padding: 1rem;
 }
 
 .px-4 {
@@ -743,6 +758,11 @@ body {
 
 .text-lg {
   font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
   line-height: 1.75rem;
 }
 

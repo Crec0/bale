@@ -1,40 +1,31 @@
 package dev.crec.bale.routes
 
-import dev.crec.bale.scraps.path
+import dev.crec.bale.components.calculateMSPT
+import dev.crec.bale.components.calculateTPS
+import dev.crec.bale.components.msptCard
+import dev.crec.bale.database.schema.PlayerStats
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.html.h1
-import kotlinx.html.svg
+import net.minecraft.server.MinecraftServer
+import java.util.concurrent.atomic.AtomicReference
 
-fun Application.setupRouting() {
+fun Application.setupRouting(serverRef: AtomicReference<MinecraftServer>) {
     routing {
         staticResources("/static", "static")
         get("/") {
             call.respondFullPage {
-                h1 {
-                    +"We pepepe]"
-                }
-                svg {
-                    attributes["viewBox"] = "0 0 24 24"
-                    attributes["stroke"] = "red"
-                    attributes["class"] = "w-16 h-16"
-                    path {
-                        attributes["stroke-linecap"] = "round"
-                        attributes["stroke-linejoin"] = "round"
-                        attributes["stroke-width"] = "2"
-                        attributes["d"] = "M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    }
-                }
+                msptCard()
             }
         }
-        get("/stats/{stat}") {
-            val stat = call.parameters["stat"]
-            call.respondFullPage {
-                h1 {
-                    +"$stat"
-                }
-            }
+        get("/stats/mspt") {
+            call.respondText { "%.2f".format(calculateMSPT(serverRef)) }
+        }
+        get("/stats/tps") {
+            call.respondText { "%.2f".format(calculateTPS(serverRef)) }
         }
     }
 }
+
+

@@ -1,10 +1,6 @@
 package dev.crec.bale.crypto
 
-import dev.crec.bale.LOG
 import dev.crec.bale.configFile
-import dev.crec.bale.crypto.Crypto.base64
-import dev.crec.bale.crypto.Crypto.writeToFile
-import net.fabricmc.loader.impl.util.log.Log
 import java.nio.ByteBuffer
 import java.security.SecureRandom
 import javax.crypto.Cipher

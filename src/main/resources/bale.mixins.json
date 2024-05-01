@@ -4,11 +4,9 @@
     "package": "dev.crec.bale.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "DedicatedServerMixin",
         "VirtualThreadFactoryMixin"
     ],
     "client": [
-        "IntegratedServerMixin"
     ],
     "injectors": {
         "defaultRequire": 1
