@@ -1,13 +1,11 @@
 package dev.crec.bale.database
 
 import dev.crec.bale.database.schema.PlayerStats
-import kotlinx.coroutines.Dispatchers
+import dev.crec.bale.dispatcher
 import net.fabricmc.loader.api.FabricLoader
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.sql.ResultSet
 
 object DatabaseSingleton {
     fun init() {
@@ -19,7 +17,12 @@ object DatabaseSingleton {
         }
     }
 
-    suspend fun <T> query(block: suspend () -> T): T = newSuspendedTransaction(Dispatchers.IO) {
+    suspend fun <T> query(block: suspend () -> T): T = newSuspendedTransaction(dispatcher) {
+        block()
+    }
+
+    suspend fun <T> loggedQuery(block: suspend () -> T): T = newSuspendedTransaction(dispatcher) {
+        addLogger(StdOutSqlLogger)
         block()
     }
 }

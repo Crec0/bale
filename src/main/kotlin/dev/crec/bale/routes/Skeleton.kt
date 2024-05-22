@@ -3,11 +3,12 @@ package dev.crec.bale.routes
 import dev.crec.bale.scraps.path
 import io.ktor.server.application.*
 import io.ktor.server.html.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.*
 
 suspend fun ApplicationCall.respondFullPage(
     localStyle: String? = null,
-    contentBlock: MAIN.() -> Unit
+    contentBlock: suspend MAIN.() -> Unit
 ) {
     this.respondHtml {
         lang = "en"
@@ -83,7 +84,7 @@ suspend fun ApplicationCall.respondFullPage(
                 }
                 main(classes = "flex mx-auto items-center relative flex-col max-w-[80%]") {
                     id = "mainContent"
-                    contentBlock.invoke(this)
+                    runBlocking { contentBlock() }
                 }
             }
         }

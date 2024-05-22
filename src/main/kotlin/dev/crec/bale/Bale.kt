@@ -1,24 +1,28 @@
 package dev.crec.bale
 
 import dev.crec.bale.commands.Generate
-import dev.crec.bale.database.DataCruncher
 import dev.crec.bale.database.DatabaseSingleton
+import dev.crec.bale.database.munchers.munchPlayerStats
+import dev.crec.bale.database.munchers.munchStatsRegistry
 import dev.crec.bale.routes.setupRouting
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.server.MinecraftServer
+import org.jetbrains.annotations.BlockingExecutor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.nio.file.Path
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 import kotlin.io.path.createDirectories
@@ -30,6 +34,9 @@ const val SERVER_NAME = "bale"
 val configFile: Path = FabricLoader.getInstance().configDir.resolve("bale").resolve("key.txt")
 val log: Logger = LoggerFactory.getLogger(SERVER_NAME)
 
+val dispatcher: @BlockingExecutor CoroutineDispatcher =
+    Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()
+
 lateinit var engine: CIOApplicationEngine
 
 val thread = thread(start = false, name = "bale-network-thread") {
@@ -40,7 +47,8 @@ val thread = thread(start = false, name = "bale-network-thread") {
         ServerLifecycleEvents.SERVER_STARTED.register { s ->
             serverRef.set(s)
             launch {
-                DataCruncher.munch(s)
+                munchStatsRegistry()
+                munchPlayerStats(s)
             }
         }
 
